@@ -7,6 +7,31 @@
     </a>
 </div>
 
+
+<form method="GET" class="row mb-4">
+    <div class="col-md-4">
+        <input type="text"
+               name="search"
+               value="{{ request('search') }}"
+               class="form-control"
+               placeholder="Search title or description">
+    </div>
+
+    <div class="col-md-4">
+        <select name="sort" class="form-control">
+            <option value="">Sort</option>
+            <option value="title_asc">Title A-Z</option>
+            <option value="title_desc">Title Z-A</option>
+            <option value="price_low">Price Low → High</option>
+            <option value="price_high">Price High → Low</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <button class="btn btn-primary w-100">Apply</button>
+    </div>
+</form>
+
 <div class="row">
 @foreach ($products as $product)
     <div class="col-md-4 mb-4">

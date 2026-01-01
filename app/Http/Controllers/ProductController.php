@@ -8,12 +8,38 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     // LIST PRODUCT
-    public function index()
+       public function index(Request $request)
     {
-        $products = Product::latest()->get();
+        // mulai query
+        $query = Product::query();
+
+        // 🔍 FILTER SEARCH (name & description)
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // 🔃 SORTING
+        if ($request->sort == 'title_asc') {
+            $query->orderBy('name', 'asc');
+        } elseif ($request->sort == 'title_desc') {
+            $query->orderBy('name', 'desc');
+        } elseif ($request->sort == 'price_low') {
+            $query->orderBy('price', 'asc');
+        } elseif ($request->sort == 'price_high') {
+            $query->orderBy('price', 'desc');
+        } else {
+            // default
+            $query->latest();
+        }
+
+        $products = $query->get();
+
         return view('products.list', compact('products'));
     }
-
+    
     // FORM CREATE
     public function create()
     {
