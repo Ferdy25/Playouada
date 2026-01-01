@@ -43,6 +43,13 @@
                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-primary">
                     Detail
                 </a>
+                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-sm btn-primary">
+                        Add to Cart
+                    </button>
+                </form>
+
             </div>
         </div>
     </div>
