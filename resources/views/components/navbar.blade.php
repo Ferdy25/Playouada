@@ -9,6 +9,9 @@
             <a href="{{ route('products') }}" class="btn btn-outline-light btn-sm">
                 Products
             </a>
+             <a href="{{ route('cart.index') }}" class="btn btn-outline-light btn-sm">
+                Keranjang
+            </a>
         </div>
     </div>
 </nav>

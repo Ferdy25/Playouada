@@ -39,6 +39,7 @@
             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">
                 Edit Product
             </a>
+            
         </div>
     </div>
 </div>
