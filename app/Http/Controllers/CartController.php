@@ -37,7 +37,7 @@ class CartController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Product added to cart');
+         return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang');
     }
 
     public function remove(Request $request, $id)

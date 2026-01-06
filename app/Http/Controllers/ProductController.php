@@ -8,36 +8,56 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     // LIST PRODUCT
-       public function index(Request $request)
+         public function index(Request $request)
     {
-        // mulai query
+        // Query dasar (BELUM dieksekusi)
         $query = Product::query();
 
-        // 🔍 FILTER SEARCH (name & description)
-        if ($request->search) {
+        /**
+         * ======================
+         * SEARCH
+         * ======================
+         * Jika ada parameter ?search=
+         */
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
-        // 🔃 SORTING
-        if ($request->sort == 'title_asc') {
-            $query->orderBy('name', 'asc');
-        } elseif ($request->sort == 'title_desc') {
-            $query->orderBy('name', 'desc');
-        } elseif ($request->sort == 'price_low') {
-            $query->orderBy('price', 'asc');
-        } elseif ($request->sort == 'price_high') {
-            $query->orderBy('price', 'desc');
-        } else {
-            // default
-            $query->latest();
+        /**
+         * ======================
+         * SORT
+         * ======================
+         * Berdasarkan dropdown
+         */
+        switch ($request->sort) {
+            case 'title_asc':
+                $query->orderBy('name', 'asc');
+                break;
+
+            case 'title_desc':
+                $query->orderBy('name', 'desc');
+                break;
+
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+
+            default:
+                // Default sorting
+                $query->latest();
         }
 
+        // Eksekusi query
         $products = $query->get();
 
-        return view('products.list', compact('products'));
+        return view('dashboard', compact('products'));
     }
     
     // FORM CREATE
@@ -65,7 +85,7 @@ class ProductController extends Controller
             'image' => $image,
         ]);
 
-        return redirect()->route('products')->with('success', 'Product added');
+        return redirect()->route('dashboard')->with('success', 'Product added');
     }
 
     // SHOW PRODUCT (INI SUDAH BENER)

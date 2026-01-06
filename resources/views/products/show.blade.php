@@ -31,7 +31,7 @@
 
         <div class="mt-4">
             {{-- Tombol kembali --}}
-            <a href="{{ route('products') }}" class="btn btn-secondary">
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                 ← Back to Products
             </a>
 

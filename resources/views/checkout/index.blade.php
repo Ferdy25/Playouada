@@ -39,6 +39,10 @@
                 <button type="submit" class="btn btn-primary mt-3">
                     Proses Pesanan
                 </button>
+                   {{-- Tombol kembali --}}
+            <a href="{{ route('cart.index') }}" class="btn btn-secondary">
+                ← Back 
+            </a>
             </form>
         @else
             <div class="alert alert-warning">
