@@ -7,9 +7,18 @@
             + Add New Product
         </a>
     </div>
+
 --> 
+      {{-- ALERT ADD TO CART --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     {{-- Search & Sort --}}
-    <form method="GET" class="row mb-4">
+   <form method="GET" action="{{ route('products') }}" class="row mb-4">
         <div class="col-md-4 mb-2">
             <input
                 type="text"
@@ -36,41 +45,42 @@
 
     {{-- Product List --}}
     <div class="row">
-        @forelse ($products as $product)
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
+            @forelse ($products as $product)
+                <div class="col-6 col-md-4 col-lg-3 mb-3">
+                    <div class="card shadow-sm h-100 p-1">
 
-                    {{-- Product Image --}}
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        class="card-img-top"
-                        alt="{{ $product->name }}">
+                        <img
+                            src="{{ asset('storage/' . $product->image) }}"
+                            class="card-img-top"
+                            style="height:150px; object-fit:cover;"
+                            alt="{{ $product->name }}">
 
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ $product->name }}</h5>
+                        <div class="card-body d-flex flex-column p-2">
+                            <h6 class="card-title mb-1">{{ $product->name }}</h6>
 
-                        <p class="text-muted mb-2">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </p>
+                            <p class="text-muted small mb-2">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </p>
 
-                        <div class="mt-auto">
-                            <a href="{{ route('products.show', $product->id) }}"
-                               class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                Detail
-                            </a>
+                            <div class="mt-auto">
+                                <a href="{{ route('products.show', $product->id) }}"
+                                class="btn btn-sm btn-outline-primary w-100 py-1 mb-1">
+                                    Detail
+                                </a>
 
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-primary w-100">
-                                    Add to Cart
-                                </button>
-                            </form>
+                                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-primary w-100 py-1">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
-            </div>
-        @empty
+            @empty
+
             <div class="col-12">
                 <div class="alert alert-warning text-center">
                     Produk belum tersedia
@@ -78,5 +88,12 @@
             </div>
         @endforelse
     </div>
+
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) alert.remove();
+        }, 1000);
+    </script>
 
 </x-layouts.app>

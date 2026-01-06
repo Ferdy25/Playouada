@@ -31,6 +31,9 @@
                 Keranjang masih kosong
             </div>
         @endif
-
+          {{-- Tombol kembali --}}
+            <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                ← Back 
+            </a>
     </div>
 </x-layouts.app>
