@@ -1,53 +1,92 @@
-<x-layouts.app>
-    <div class="container mt-4">
-        <h3>Checkout</h3>
+<x-layouts.app title="Checkout">
 
-        @if($items->count() > 0)
+<div class="container mt-4">
+    <h3>Checkout</h3>
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Produk</th>
-                        <th>Qty</th>
-                        <th>Harga</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $total = 0; @endphp
+    {{-- Kalau cart kosong --}}
+    @if($cartItems->count() === 0)
+        <div class="alert alert-warning">
+            Keranjang kamu kosong
+        </div>
+    @else
 
-                    @foreach($items as $item)
-                        @php
-                            $subtotal = $item->qty * $item->product->price;
-                            $total += $subtotal;
-                        @endphp
-                        <tr>
-                            <td>{{ $item->product->name }}</td>
-                            <td>{{ $item->qty }}</td>
-                            <td>Rp {{ number_format($item->product->price,0,',','.') }}</td>
-                            <td>Rp {{ number_format($subtotal,0,',','.') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    {{-- LIST PRODUK --}}
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Produk</th>
+                <th>Qty</th>
+                <th>Harga</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
 
-            <h4>Total: Rp {{ number_format($total,0,',','.') }}</h4>
+            @php $total = 0; @endphp
 
-              <form action="{{ route('checkout.process') }}" method="POST">
-                @csrf
+            @foreach($cartItems as $item)
+                @php
+                    $subtotal = $item->qty * $item->product->price;
+                    $total += $subtotal;
+                @endphp
 
-                <button type="submit" class="btn btn-primary mt-3">
-                    Proses Pesanan
-                </button>
-                   {{-- Tombol kembali --}}
-            <a href="{{ route('cart.index') }}" class="btn btn-secondary">
-                ← Back 
-            </a>
-            </form>
-        @else
-            <div class="alert alert-warning">
-                Tidak ada item untuk checkout
-            </div>
-        @endif
-    </div>
+                <tr>
+                    <td>
+                        {{ $item->product->name }}
+
+                        {{-- NOTE --}}
+                        @if($item->note)
+                            <br>
+                            <small class="text-muted">
+                                Note: {{ $item->note }}
+                            </small>
+                        @endif
+                    </td>
+                    <td>{{ $item->qty }}</td>
+                    <td>Rp {{ number_format($item->product->price) }}</td>
+                    <td>Rp {{ number_format($subtotal) }}</td>
+                </tr>
+            @endforeach
+
+            <tr>
+                <th colspan="3">Total</th>
+                <th>Rp {{ number_format($total) }}</th>
+            </tr>
+
+        </tbody>
+    </table>
+
+    {{-- FORM CHECKOUT --}}
+    <form action="{{ route('checkout.process') }}" method="POST">
+        @csrf
+
+        {{-- Alamat --}}
+        <div class="mb-3">
+            <label class="form-label">Alamat Pengiriman</label>
+            <textarea
+                name="shipping_address"
+                class="form-control"
+                rows="3"
+                required></textarea>
+        </div>
+
+        {{-- Payment --}}
+        <div class="mb-3">
+            <label class="form-label">Metode Pembayaran</label>
+            <select name="payment_method" class="form-control" required>
+                <option value="">-- Pilih --</option>
+                <option value="cod">COD</option>
+                <option value="transfer">Transfer Bank</option>
+                <option value="ewallet">E-Wallet</option>
+            </select>
+        </div>
+
+        <button class="btn btn-success w-100">
+            Proses Checkout
+        </button>
+    </form>
+
+    @endif
+</div>
+
 </x-layouts.app>

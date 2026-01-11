@@ -2,60 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
+use Illuminate\Http\Request; 
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    // 👉 HALAMAN CHECKOUT (GET)
-    public function index(Request $request)
+    /**
+     * Tampilkan halaman checkout
+     */
+    public function index()
     {
-        $sessionId = $request->session()->getId();
-
-        $items = Cart::with('product')
-            ->where('session_id', $sessionId)
+        $cartItems = CartItem::with('product')
+            ->where('user_id', auth()->id())
             ->get();
 
-        return view('checkout.index', compact('items'));
+        return view('checkout.index', compact('cartItems'));
     }
 
-    // 👉 PROSES CHECKOUT (POST)
+    /**
+     * Proses checkout
+     */
     public function process(Request $request)
     {
-        $sessionId = $request->session()->getId();
-
-        $carts = Cart::with('product')
-            ->where('session_id', $sessionId)
-            ->get();
-
-        if ($carts->isEmpty()) {
-            return back()->with('error', 'Cart empty');
-        }
-
-        $total = $carts->sum(function ($item) {
-            return $item->product->price * $item->qty;
-        });
-
-        $order = Order::create([
-            'session_id'  => $sessionId,
-            'total_price' => $total,
+        $request->validate([
+            'address' => 'required|string',
+            'payment_method'   => 'required|string',
         ]);
 
-        foreach ($carts as $item) {
+        $cartItems = CartItem::with('product')
+            ->where('user_id', auth()->id())
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return back()->with('error', 'Keranjang kosong');
+        }
+
+        // hitung total
+        $total = 0;
+        foreach ($cartItems as $item) {
+            $total += $item->product->price * $item->qty;
+        }
+
+        // simpan order
+        $order = Order::create([
+            'user_id'          => auth()->id(),
+            'total_price'      => $total,
+            'address' => $request->shipping_address,
+            'payment_method'   => $request->payment_method,
+            'status'           => 'pending',
+        ]);
+
+        // simpan item order
+        foreach ($cartItems as $item) {
             OrderItem::create([
-                'order_id'   => $order->id,
-                'product_id' => $item->product_id,
-                'qty'        => $item->qty,
-                'price'      => $item->product->price,
+                'order_id'  => $order->id,
+                'product_id'=> $item->product_id,
+                'qty'       => $item->qty,
+                'price'     => $item->product->price,
+                'note'      => $item->note,
             ]);
         }
 
-        // kosongkan cart
-        Cart::where('session_id', $sessionId)->delete();
+        // hapus cart setelah checkout
+        CartItem::where('user_id', auth()->id())->delete();
 
-        return redirect()->route('products')
-            ->with('success', 'Checkout success');
+        return redirect()->route('cart.index')
+            ->with('success', 'Checkout berhasil');
     }
 }
