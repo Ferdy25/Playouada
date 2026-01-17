@@ -13,12 +13,32 @@
                         Harga: Rp {{ number_format($item->product->price, 0, ',', '.') }}
                     </div>
 
+                  <form action="{{ route('cart.decrease', $item->id) }}" method="POST">
+                        @csrf
+                        <button>-</button>
+                    </form>
+
+                    <span>{{ $item->qty }}</span>
+
+                    <form action="{{ route('cart.increase', $item->id) }}" method="POST">
+                        @csrf
+                        <button>+</button>
+                    </form>
+
+                    <form action="{{ route('cart.note', $item->id) }}" method="POST">
+                        @csrf
+                        <input type="text" name="note" value="{{ $item->note }}">
+                        <button>Simpan Note</button>
+                    </form>
+
+
                     <form action="{{ route('cart.remove', $item->id) }}" method="POST">
                         @csrf
                         <button class="btn btn-danger btn-sm">
                             Hapus
                         </button>
                     </form>
+
                 </div>
             @endforeach
 

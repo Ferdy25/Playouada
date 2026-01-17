@@ -22,12 +22,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+//     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+//     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+//     Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+//     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+//     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 });
 
 // PUBLIC (bisa diakses tanpa login)
@@ -48,6 +48,34 @@ Route::controller(ProductController::class)
         Route::get('/edit/{id}', 'edit')->name('products.edit');
         Route::put('/update/{id}', 'update')->name('products.update');
     });
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/cart', [CartController::class, 'index'])
+        ->name('cart.index');
+
+    Route::post('/cart/add/{product}', [CartController::class, 'add'])
+        ->name('cart.add');
+
+    Route::post('/cart/{cartItem}/increase', [CartController::class, 'increase'])
+        ->name('cart.increase');
+
+    Route::post('/cart/{cartItem}/decrease', [CartController::class, 'decrease'])
+        ->name('cart.decrease');
+
+    Route::post('/cart/{cartItem}/note', [CartController::class, 'updateNote'])
+        ->name('cart.note');
+
+    Route::post('/cart/{cartItem}/remove', [CartController::class, 'remove'])
+        ->name('cart.remove');
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+        ->name('checkout');
+
+    Route::post('/checkout', [CheckoutController::class, 'process'])
+        ->name('checkout.process');
+});
+
 
 /*
 Route::controller(ProductController::class)->prefix('products')->group(function () {
